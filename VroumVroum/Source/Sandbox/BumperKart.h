@@ -335,7 +335,7 @@ private:
 	 * Player ID given by the server.
 	 */
 	UPROPERTY(VisibleAnywhere)
-	int PlayerID;
+	int PlayerID = -1;
 
 	static std::random_device Rd;
 	static std::mt19937 Gen;

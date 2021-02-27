@@ -104,10 +104,7 @@ void ABumperKart::BeginPlay()
 	Circuit = Cast<ACircuit>(UGameplayStatics::GetActorOfClass(this, ACircuit::StaticClass()));
 
 	if (Circuit)
-	{
 		Circuit->GetWeatherConfig()->OnRainUpdate.AddDynamic(this, &ABumperKart::UpdateTerrainResistance);
-		Circuit->RegisterPlayer(this);
-	}
 
 	OnUpdateItem.AddDynamic(this, &ABumperKart::UpdatePistolVisibility);
 

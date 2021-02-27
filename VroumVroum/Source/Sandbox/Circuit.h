@@ -79,6 +79,7 @@ struct FCircuitPlayer
 
     bool	IsBehind(const FCircuitPlayer& OtherPlayer) const;
 
+	UPROPERTY(VisibleAnywhere)
 	ABumperKart*	Actor = nullptr;
 	UPROPERTY(VisibleAnywhere)
 	int		Lap = 1;
@@ -109,14 +110,6 @@ class SANDBOX_API ACircuit final : public AActor
 public:	
 	// Sets default values for this actor's properties
 	ACircuit();
-
-    /**
-	 * Register a new Player to the Race.
-	 * This function should be called by each BumperKart on BeginPlay.
-	 *
-	 * @param NewPlayer - New Player to register.
-	 */
-	void	RegisterPlayer(ABumperKart* NewPlayer);
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
@@ -207,12 +200,14 @@ private:
 	 * Finds all the Checkpoints on the map and put them, by ID order,
 	 * in the Checkpoints Array of the current Circuit.
 	 */
+	UFUNCTION(BlueprintCallable)
 	void	RetrieveCheckpointsInOrder();
 
     /**
 	 * Finds all the BumperKarts on the map and put them in the Players Array
 	 * of the current Circuit while assigning each of them a unique ID.
 	 */
+	UFUNCTION(BlueprintCallable)
 	void	RetrievePlayers();
 
     /**

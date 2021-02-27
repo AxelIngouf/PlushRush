@@ -17,7 +17,7 @@ void UBTService_UpdateNextCheckpoint::TickNode(UBehaviorTreeComponent& OwnerComp
 
     ABumperKart* ControlledKart = Cast<ABumperKart>(MyController->GetPawn());
 
-    if(ControlledKart && ControlledKart->GetCircuit())
+    if(ControlledKart && ControlledKart->GetCircuit() && ControlledKart->GetPlayerID() >= 0 )
     {
         OwnerComp.GetBlackboardComponent()->SetValueAsObject(GetSelectedBlackboardKey(), ControlledKart->GetCircuit()->GetPlayer(ControlledKart->GetPlayerID())->NextCheckpoint);
     }

@@ -21,16 +21,6 @@ ACircuit::ACircuit()
 	SetReplicates(true);
 }
 
-void ACircuit::RegisterPlayer(ABumperKart* NewPlayer)
-{
-	if(NewPlayer->GetPlayerID() < 0)
-	{
-		NewPlayer->SetPlayerID(Players.Num());
-		Players.Emplace(NewPlayer, Checkpoints[0]);
-		OnNewPlayerRegisteredDelegate.Broadcast(NewPlayer);
-	}
-}
-
 void ACircuit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -133,38 +123,38 @@ void ACircuit::BeginPlay()
 	Super::BeginPlay();
 
 	RetrieveCheckpointsInOrder();
-
-	if(Checkpoints.Num() > 0)
-		RetrievePlayers();
 }
 
 void ACircuit::UpdatePlayerDistance()
 {
 	for(FCircuitPlayer& Player : Players)
 	{
-		const float NewDistance = UKismetMathLibrary::Vector_Distance(Player.NextCheckpoint->GetActorLocation(), Player.Actor->GetActorLocation());
-
-		if (Player.NearestDistanceToNextCheckpoint +
-			DISTANCE_BEFORE_WRONG_WAY < NewDistance && Player.NearestDistanceToNextCheckpoint >= 0)
+		if(Player.NextCheckpoint != nullptr)
 		{
-			if(NewDistance - Player.NearestDistanceToNextCheckpoint > DISTANCE_BEFORE_WRONG_WAY / 2)
+			const float NewDistance = UKismetMathLibrary::Vector_Distance(Player.NextCheckpoint->GetActorLocation(), Player.Actor->GetActorLocation());
+
+			if (Player.NearestDistanceToNextCheckpoint +
+				DISTANCE_BEFORE_WRONG_WAY < NewDistance && Player.NearestDistanceToNextCheckpoint >= 0)
 			{
-				Player.bWrongWay = true;
-				if(NewDistance - Player.NearestDistanceToNextCheckpoint > DISTANCE_BEFORE_WRONG_WAY * 1.5)
-					Player.NearestDistanceToNextCheckpoint = NewDistance - DISTANCE_BEFORE_WRONG_WAY;
+				if (NewDistance - Player.NearestDistanceToNextCheckpoint > DISTANCE_BEFORE_WRONG_WAY / 2)
+				{
+					Player.bWrongWay = true;
+					if (NewDistance - Player.NearestDistanceToNextCheckpoint > DISTANCE_BEFORE_WRONG_WAY * 1.5)
+						Player.NearestDistanceToNextCheckpoint = NewDistance - DISTANCE_BEFORE_WRONG_WAY;
+				}
+				else
+				{
+					Player.bWrongWay = false;
+				}
 			}
 			else
 			{
 				Player.bWrongWay = false;
+				if (NewDistance < Player.NearestDistanceToNextCheckpoint || Player.NearestDistanceToNextCheckpoint < 0)
+					Player.NearestDistanceToNextCheckpoint = NewDistance;
 			}
+			Player.CurrentDistanceToNextCheckpoint = NewDistance;
 		}
-		else
-		{
-			Player.bWrongWay = false;
-			if(NewDistance < Player.NearestDistanceToNextCheckpoint || Player.NearestDistanceToNextCheckpoint < 0)
-				Player.NearestDistanceToNextCheckpoint = NewDistance;
-		}
-		Player.CurrentDistanceToNextCheckpoint = NewDistance;
 	}
 }
 
@@ -172,9 +162,12 @@ void ACircuit::Tick(const float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	UpdateTimer();
-	UpdatePlayerDistance();
-	UpdateLeaderboard();
+	if(HasAuthority())
+	{
+		UpdateTimer();
+		UpdatePlayerDistance();
+		UpdateLeaderboard();
+	}
 }
 
 void ACircuit::RetrieveCheckpointsInOrder()
