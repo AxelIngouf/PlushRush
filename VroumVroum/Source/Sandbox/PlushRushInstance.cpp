@@ -41,8 +41,6 @@ void UPlushRushInstance::Init()
     SessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &UPlushRushInstance::OnDestroySessionComplete);
     SessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UPlushRushInstance::OnFindSessionComplete);
     SessionInterface->OnJoinSessionCompleteDelegates.AddUObject(this, &UPlushRushInstance::OnJoinSessionComplete);
-
-    GenerateCircuit();
 }
 
 void UPlushRushInstance::Shutdown()
@@ -97,12 +95,6 @@ void UPlushRushInstance::JoinServer()
     SessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);
 
     SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
-}
-
-void UPlushRushInstance::GenerateCircuit_Implementation()
-{
-    if (UGameplayStatics::GetCurrentLevelName(this) == "PlaceHolder" || UGameplayStatics::GetCurrentLevelName(this) == "Axel")
-        Circuit = Cast<ACircuit>(GetWorld()->SpawnActor(ACircuit::StaticClass()));
 }
 
 void UPlushRushInstance::EndRace()
@@ -290,6 +282,4 @@ void UPlushRushInstance::OnJoinSessionComplete(FName SessionName, EOnJoinSession
 void UPlushRushInstance::TravelToRace()
 {
     GetWorld()->ServerTravel("/Game/Maps/PlaceHolder?listen");
-
-    GenerateCircuit();
 }

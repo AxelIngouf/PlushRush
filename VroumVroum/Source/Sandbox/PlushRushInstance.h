@@ -56,9 +56,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void	JoinServer();
 
-	UFUNCTION(Server, Reliable)
-	void	GenerateCircuit();
-
 	void	EndRace();
 
 	UPROPERTY(VisibleAnywhere)
@@ -87,8 +84,6 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	float	LobbyTimer = 30.f;
-
-	class ACircuit* Circuit = nullptr;
 
 	IOnlineSessionPtr	SessionInterface;
 	TSharedPtr<FOnlineSessionSearch> SessionSearch;

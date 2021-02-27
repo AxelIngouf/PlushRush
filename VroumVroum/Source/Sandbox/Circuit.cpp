@@ -23,7 +23,6 @@ ACircuit::ACircuit()
 
 void ACircuit::RegisterPlayer(ABumperKart* NewPlayer)
 {
-	RetrievePlayers();
 	if(NewPlayer->GetPlayerID() < 0)
 	{
 		NewPlayer->SetPlayerID(Players.Num());
@@ -70,7 +69,6 @@ void ACircuit::PlayerReachedCheckpoint(const int PlayerID, const int CheckpointI
 		return;
 	}
 
-
 	FCircuitPlayer* Player = &Players[PlayerID];
 
 	if (Player->bFinished)
@@ -78,8 +76,6 @@ void ACircuit::PlayerReachedCheckpoint(const int PlayerID, const int CheckpointI
 
 	if (Player->NextCheckpoint->GetID() == CheckpointID)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%d"), CheckpointID);
-		UE_LOG(LogTemp, Warning, TEXT("%d"), Checkpoints.Num() - 1);
 		if (CheckpointID == Checkpoints.Num() - 1)
 		{
 			PlayerFinishedLap(PlayerID);
@@ -243,7 +239,7 @@ void ACircuit::PlayerFinishedLap(const int PlayerID)
 		{
 			Player.PlayerStats.BestLapTimer = CurrentLapTimer;
 		}
-		UE_LOG(LogTemp, Warning, TEXT("FinishedLap"));
+
 		Player.Lap++;
 		if (Player.Lap > NumberOfLaps)
 		{
